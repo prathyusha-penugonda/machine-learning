@@ -1,46 +1,67 @@
+
 import pandas as pd
+import numpy as np
+
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import mean_squared_error,r2_score
-#load the dataset using with the pandas
-df=pd.read_csv("dataset.csv")
-X=df[["House_Size"]]
-Y=df["Price"]
-#model training and testing starts here
-X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,random_state=42)
-#print("Training Features:")
-#print(X_train)
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
 
-#print("Training Prices:")
-#print(Y_train)
+df = pd.read_csv("dataset.csv")
 
-#print("Testing Features:")
-#print(X_test)
+print("\nDataset:")
+print(df.head())
 
-#print("Actual Testing Prices:")
-#print(Y_test)
-model=LinearRegression()
-model.fit(X_train,Y_train)
-#print(model.coef_)
-#print(model.intercept_)
-y_pred=model.predict(X_test)
-print("model is predicted value")
-comparision=pd.DataFrame({
-    "Actual_values":Y_test,
-    "predicted_value":y_pred
+print("\nDataset Shape:", df.shape)
+print("\nDataset Information:")
+df.info()
+
+X = df[["House_Size"]]
+y = df["Price"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+print("\nTraining Records:", len(X_train))
+print("Testing Records:", len(X_test))
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+print("\nSlope:", model.coef_[0])
+print("Intercept:", model.intercept_)
+
+y_pred = model.predict(X_test)
+
+comparison = pd.DataFrame({
+    "House_Size": X_test["House_Size"].values,
+    "Actual_Price": y_test.values,
+    "Predicted_Price": y_pred
 })
-new_house=pd.DataFrame({
-    "House_Size":[1600]
-})
-y_pred2=model.predict(new_house)
-# print(y_pred2)
-#print(y_pred)
-#print(Y_test)
-print(comparision)
-mae=mean_absolute_error(Y_test,y_pred)
-mse=mean_squared_error(Y_test,y_pred)
-r2s=r2_score(Y_test,y_pred)
-print(mae)
-print(mse)
-print(r2s)
+
+print("\nActual vs Predicted Prices:")
+print(comparison)
+
+new_house = pd.DataFrame({"House_Size": [1600]})
+predicted_price = model.predict(new_house)
+
+print("\nNew House Prediction:")
+print("House Size: 1600 sq. ft.")
+print("Predicted Price:", round(predicted_price[0], 2), "Lakhs")
+
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print("\nModel Evaluation:")
+print("MAE:", round(mae, 4))
+print("MSE:", round(mse, 4))
+print("RMSE:", round(rmse, 4))
+print("R2 Score:", round(r2, 4))
+
+print("\nLinear Regression Project Completed Successfully!")
